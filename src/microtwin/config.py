@@ -19,6 +19,7 @@ DATA_PROCESSED_DIR = Path(
     os.getenv("MICROTWIN_DATA_PROCESSED_DIR", str(PROJECT_ROOT / "data" / "processed"))
 )
 MODELS_DIR = Path(os.getenv("MICROTWIN_MODELS_DIR", str(PROJECT_ROOT / "models")))
+PROCESSED_DATA_FILENAME = os.getenv("MICROTWIN_PROCESSED_DATA_FILENAME", "sensor_data.parquet")
 
 # --- MLflow ---
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", f"file:{PROJECT_ROOT / 'mlruns'}")
