@@ -45,4 +45,5 @@ mlartifacts/
 # --- Misc ---
 docs.md
 CLAUDE.md
-pyproject.toml
+ISSUES.md
+cheatsheet/
