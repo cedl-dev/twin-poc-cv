@@ -9,7 +9,7 @@ description = "Micro Digital Twin PoC: anomaly detection pipeline for particle a
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Cedl-dev", email = "" }]
+authors = [{ name = "Cedl-dev" }]
 keywords = [
     "digital-twin",
     "mlops",
@@ -33,6 +33,9 @@ dependencies = [
     "uvicorn[standard]>=0.27",
     "pydantic>=2.5",
 ]
+
+[project.scripts]
+microtwin-build-dataset = "microtwin.cli:build_dataset"
 
 [project.optional-dependencies]
 dev = [
