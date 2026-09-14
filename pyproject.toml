@@ -36,6 +36,7 @@ dependencies = [
 
 [project.scripts]
 microtwin-build-dataset = "microtwin.cli:build_dataset"
+microtwin-train = "microtwin.cli:train_model"
 
 [project.optional-dependencies]
 dev = [
@@ -58,7 +59,23 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Note: a NotOpenSSLWarning from urllib3 (macOS's system Python 3.9 links
+# against LibreSSL, not OpenSSL) is not filterable here: a pytest plugin
+# imports urllib3 during plugin auto-loading, before any filterwarnings
+# config takes effect. It's a harmless, environment-only warning (Linux
+# containers use real OpenSSL, so it disappears under Docker) — not
+# something this project's code can or should fix.
 
 [tool.mypy]
 python_version = "3.9"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# mlflow pulls in protobuf's "google" namespace package, which has no
+# __init__.py. mypy's incremental cache occasionally corrupts itself around
+# namespace packages like this one (a known upstream mypy issue), crashing
+# with "AssertionError: Cannot find module for google". Skipping analysis of
+# this module entirely avoids the crash without weakening our own checks.
+module = "google.*"
+ignore_missing_imports = true
+follow_imports = "skip"

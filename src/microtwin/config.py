@@ -22,8 +22,15 @@ MODELS_DIR = Path(os.getenv("MICROTWIN_MODELS_DIR", str(PROJECT_ROOT / "models")
 PROCESSED_DATA_FILENAME = os.getenv("MICROTWIN_PROCESSED_DATA_FILENAME", "sensor_data.parquet")
 
 # --- MLflow ---
-MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", f"file:{PROJECT_ROOT / 'mlruns'}")
+# A SQLite-backed store (rather than a plain "file:" store) is required for
+# the Model Registry (versioned model artifacts) to work locally.
+MLFLOW_TRACKING_URI = os.getenv(
+    "MLFLOW_TRACKING_URI", f"sqlite:///{PROJECT_ROOT / 'mlflow.db'}"
+)
 MLFLOW_EXPERIMENT_NAME = os.getenv("MLFLOW_EXPERIMENT_NAME", "microtwin-anomaly-detection")
+MLFLOW_REGISTERED_MODEL_NAME = os.getenv(
+    "MLFLOW_REGISTERED_MODEL_NAME", "microtwin-isolation-forest"
+)
 
 # --- Sensor data generation (Step 1) ---
 # Maps each generated data column to the EPICS-style process variable it
