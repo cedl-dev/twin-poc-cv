@@ -56,6 +56,13 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+ignore = [
+    # Pydantic (v2) evaluates model field annotations at runtime even under
+    # `from __future__ import annotations`. On the minimum supported Python
+    # (3.9), `X | None` isn't valid at runtime, only `Optional[X]` is — so
+    # this suggestion would introduce a crash on 3.9 if applied.
+    "UP045",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

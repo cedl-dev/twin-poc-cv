@@ -37,6 +37,7 @@ def train_isolation_forest(
     df: pd.DataFrame,
     contamination: float = config.CONTAMINATION,
     n_estimators: int = config.N_ESTIMATORS,
+    max_samples: int = config.MAX_SAMPLES,
     random_state: int = config.RANDOM_SEED,
 ) -> IsolationForest:
     """Fit an Isolation Forest on the feature columns of `df`.
@@ -45,10 +46,17 @@ def train_isolation_forest(
     `is_anomaly` column, if present, is never used for training — it exists
     only because this is synthetic data, and is used solely for evaluation
     in `evaluate_against_ground_truth`.
+
+    `max_samples` is set well above scikit-learn's default (256): a small
+    subsample caps each tree's depth low enough that an extreme outlier on
+    a single feature can stay bundled with a crowded, "normal-looking" leaf
+    instead of being isolated (see cheatsheet/03-training.md for the full
+    story). `config.MAX_SAMPLES` avoids that at a small training-time cost.
     """
     model = IsolationForest(
         contamination=contamination,
         n_estimators=n_estimators,
+        max_samples=max_samples,
         random_state=random_state,
         n_jobs=-1,
     )
@@ -96,6 +104,7 @@ def run_training(data_path: Path | None = None) -> str:
             {
                 "contamination": config.CONTAMINATION,
                 "n_estimators": config.N_ESTIMATORS,
+                "max_samples": config.MAX_SAMPLES,
                 "random_state": config.RANDOM_SEED,
                 "n_training_rows": len(df),
                 "feature_columns": ",".join(FEATURE_COLUMNS),
