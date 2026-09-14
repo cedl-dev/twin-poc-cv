@@ -35,8 +35,8 @@ dependencies = [
 ]
 
 [project.scripts]
-microtwin-build-dataset = "microtwin.cli:build_dataset"
-microtwin-train = "microtwin.cli:train_model"
+microtwin-build-dataset = "microtwin.cli:run_build_dataset_cli"
+microtwin-train = "microtwin.cli:run_train_cli"
 
 [project.optional-dependencies]
 dev = [
