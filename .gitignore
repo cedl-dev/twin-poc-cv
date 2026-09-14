@@ -30,6 +30,7 @@ models/*
 # --- MLflow ---
 mlruns/
 mlartifacts/
+mlflow.db
 
 # --- Environment / secrets ---
 .env
