@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+.git/
+.github/
+
+data/
+models/
+mlruns/
+mlartifacts/
+mlflow.db
+
+# Local planning docs, not part of the image
+docs.md
+CLAUDE.md
+ISSUES.md
+cheatsheet/
+
+.env
+.env.*
