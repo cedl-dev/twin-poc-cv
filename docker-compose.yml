@@ -1,0 +1,50 @@
+services:
+  # One-shot job: generates the dataset and trains the model, then exits.
+  # Both other services wait for it to complete successfully before starting.
+  trainer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    working_dir: /data
+    volumes:
+      - microtwin-data:/data
+    environment:
+      MICROTWIN_DATA_RAW_DIR: /data/raw
+      MICROTWIN_DATA_PROCESSED_DIR: /data/processed
+      MICROTWIN_MODELS_DIR: /data/models
+      MLFLOW_TRACKING_URI: sqlite:////data/mlflow.db
+    command: sh -c "microtwin-build-dataset && microtwin-train"
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    working_dir: /data
+    ports:
+      - "8000:8000"
+    volumes:
+      - microtwin-data:/data
+    environment:
+      MLFLOW_TRACKING_URI: sqlite:////data/mlflow.db
+    depends_on:
+      trainer:
+        condition: service_completed_successfully
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    working_dir: /data
+    ports:
+      - "5001:5000"
+    volumes:
+      - microtwin-data:/data
+    environment:
+      MLFLOW_TRACKING_URI: sqlite:////data/mlflow.db
+    command: mlflow ui --backend-store-uri sqlite:////data/mlflow.db --host 0.0.0.0 --port 5000
+    depends_on:
+      trainer:
+        condition: service_completed_successfully
+
+volumes:
+  microtwin-data:

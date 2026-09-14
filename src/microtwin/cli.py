@@ -39,9 +39,10 @@ def _parse_build_dataset_args(argv: list[str] | None) -> argparse.Namespace:
 def build_dataset(argv: list[str] | None = None) -> Path:
     """Generate synthetic sensor data and persist it through the ETL pipeline.
 
-    Registered as the `microtwin-build-dataset` console script; `argv`
-    defaults to `sys.argv[1:]` when called from the command line, and can be
-    passed explicitly (e.g. from tests) otherwise.
+    `argv` defaults to `sys.argv[1:]` when called from the command line, and
+    can be passed explicitly (e.g. from tests) otherwise. Returns the output
+    path, for programmatic/test use — call `run_build_dataset_cli` instead
+    from an actual console script (see its docstring for why).
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = _parse_build_dataset_args(argv)
@@ -53,6 +54,18 @@ def build_dataset(argv: list[str] | None = None) -> Path:
 
     logger.info("Dataset written to %s (%d rows)", output_path, len(raw_df))
     return output_path
+
+
+def run_build_dataset_cli() -> None:
+    """Console-script entry point registered as `microtwin-build-dataset`.
+
+    Deliberately discards `build_dataset`'s return value: setuptools wraps a
+    console-script's target function as `sys.exit(fn())`, and `sys.exit()`
+    called with any non-None, non-int value prints it and exits with status
+    1 — so returning the Path directly here would make every successful run
+    look like a failure (and break e.g. `a && b` shell chaining in Docker).
+    """
+    build_dataset()
 
 
 def _parse_train_args(argv: list[str] | None) -> argparse.Namespace:
@@ -71,9 +84,10 @@ def _parse_train_args(argv: list[str] | None) -> argparse.Namespace:
 def train_model(argv: list[str] | None = None) -> str:
     """Train the anomaly detector and log the run to MLflow.
 
-    Registered as the `microtwin-train` console script; `argv` defaults to
-    `sys.argv[1:]` when called from the command line, and can be passed
-    explicitly (e.g. from tests) otherwise. Returns the MLflow run ID.
+    `argv` defaults to `sys.argv[1:]` when called from the command line, and
+    can be passed explicitly (e.g. from tests) otherwise. Returns the MLflow
+    run ID, for programmatic/test use — call `run_train_cli` instead from an
+    actual console script (see `run_build_dataset_cli`'s docstring for why).
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = _parse_train_args(argv)
@@ -83,5 +97,14 @@ def train_model(argv: list[str] | None = None) -> str:
     return run_id
 
 
+def run_train_cli() -> None:
+    """Console-script entry point registered as `microtwin-train`.
+
+    See `run_build_dataset_cli`'s docstring for why this discards the
+    underlying function's return value instead of returning it directly.
+    """
+    train_model()
+
+
 if __name__ == "__main__":
-    build_dataset()
+    run_build_dataset_cli()
