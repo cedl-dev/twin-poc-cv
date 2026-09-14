@@ -53,3 +53,16 @@ BEAM_INTENSITY_STD_UA = float(os.getenv("MICROTWIN_BEAM_INTENSITY_STD_UA", "2.0"
 # --- Isolation Forest hyperparameters (Step 3) ---
 CONTAMINATION = float(os.getenv("MICROTWIN_CONTAMINATION", str(ANOMALY_RATE)))
 N_ESTIMATORS = int(os.getenv("MICROTWIN_N_ESTIMATORS", "200"))
+# scikit-learn's default (256) caps each tree's depth at ceil(log2(256)) = 8,
+# which can let an extreme single-feature outlier hide in a crowded leaf
+# before it gets isolated (see cheatsheet/03-training.md). 4096 raises the
+# depth cap to 12 for a negligible training-time cost.
+MAX_SAMPLES = int(os.getenv("MICROTWIN_MAX_SAMPLES", "4096"))
+
+# --- Inference API (Step 4) ---
+# Above this z-score (standard deviations from the nominal operating point
+# used to generate the data), an anomalous reading is reported as CRITICAL
+# rather than WARNING.
+ANOMALY_Z_SCORE_CRITICAL_THRESHOLD = float(
+    os.getenv("MICROTWIN_ANOMALY_Z_SCORE_CRITICAL_THRESHOLD", "10.0")
+)
